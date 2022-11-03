@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Excel to JSON</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js" integrity="sha512-qilAGdDSZ5c0sTjizcSCffmIb8D2rHttMYGUxtI3OFn8lB29BlU2tEUcPesHHLQ2t0Y5TInglWKY6V3GoSK0IA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>  
+</head>
+  <body>
+    <input type="file" name="fileExcel" id="fileExcel" accept=".xls, .xlsx" />
+
+    <button class="btn" id="convert">Convert</button>
+
+    <div id="data">
+
+
+    </div>
+
+    <script>
+      let selectedFile;
+
+      document
+        .getElementById("fileExcel")
+        .addEventListener("change", (event) => {
+          selectedFile = event.target.files[0];
+        });
+
+      document.getElementById("convert").addEventListener("click", () => {
+        if (selectedFile) {
+            let fileReader = new FileReader();
+            fileReader.readAsBinaryString(selectedFile);
+            fileReader.onload = (event) => {
+                let data = event.target.result;
+                let workbook = XLSX.read(data, {type:"binary"});
+                workbook.SheetNames.forEach( sheet =>{
+                    let rowObject = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheet]);
+
+                    document.getElementById("data").innerHTML = JSON.stringify(rowObject);
+                    console.log(rowObject);
+                    for(var i = 0; i < rowObject.length; i++  ){
+                        console.log(rowObject[i].Firstname + " " + rowObject[i].Lastname);
+                    }
+
+                    });
+            }
+
+        }
+      });
+    </script>
+  </body>
+</html>
